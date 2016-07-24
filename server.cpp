@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <errno.h>
 
 const string Server::SERVER_STRING = "Server: jdbhttpd/0.1.0\r\n";
 Server *Server::_server = nullptr;
@@ -157,7 +158,8 @@ void Server::serve_file(int connfd, const string &path)
             buf[nread] = '\0';
             msg += buf;
         }
-        write_msg(connfd, msg);
+        if (write_msg(connfd, msg) < 0)
+            perror("write error");
     }
     close(fd);
 }
